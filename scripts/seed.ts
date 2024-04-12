@@ -72,11 +72,48 @@ const main = async () => {
         order: 1,
         title: "Nouns",
       },
+      // {
+      //   id: 2,
+      //   unitId: 1, // Unit 1 (Learn the basics...)
+      //   order: 2,
+      //   title: "Verbs",
+      // },
+    ]);
+
+    await db.insert(schema.challenges).values([
+      {
+        id: 1,
+        lessonId: 1, // Nouns
+        type: "SELECT",
+        order: 1,
+        question: 'Which one these is the "the man"?',
+      },
+    ]);
+
+    await db.insert(schema.challengeOptions).values([
+      {
+        id: 1,
+        challengeId: 1, // question: 'Which one these is the "the man"?'
+        imageSrc: "/man.svg",
+        correct: true,
+        text: "el hombre", // answer
+        audioSrc: "/es_man.mp3",
+      },
       {
         id: 2,
-        unitId: 1, // Unit 1 (Learn the basics...)
-        order: 2,
-        title: "Verbs",
+        challengeId: 1,
+        imageSrc: "/woman.svg",
+        correct: false,
+        text: "el mujer",
+        audioSrc: "/es_woman.mp3",
+      },
+      {
+        id: 3,
+        challengeId: 1,
+        imageSrc: "/robot.svg",
+        correct: false,
+        text: "el robot",
+        audioSrc: "/robot.mp3",
       },
     ]);
 
