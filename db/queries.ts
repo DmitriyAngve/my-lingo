@@ -2,13 +2,7 @@ import { cache } from "react";
 import db from "./drizzle";
 import { auth } from "@clerk/nextjs";
 import { eq } from "drizzle-orm";
-import {
-  challengeProgress,
-  courses,
-  lessons,
-  units,
-  userProgress,
-} from "./schema";
+import { challengeProgress, courses, units, userProgress } from "./schema";
 
 export const getUserProgress = cache(async () => {
   const { userId } = await auth();
@@ -35,13 +29,15 @@ export const getCourses = cache(async () => {
 });
 
 export const getUnits = cache(async () => {
+  const { userId } = await auth();
   const userProgress = await getUserProgress();
 
   // Если нет актуального курса, то пустой массив
-  if (!userProgress?.activeCourseId) {
+  if (!userId || !userProgress?.activeCourseId) {
     return [];
   }
 
+  // TODO: Confirm order is needed
   const data = await db.query.units.findMany({
     where: eq(units.courseId, userProgress.activeCourseId),
     with: {
@@ -49,7 +45,10 @@ export const getUnits = cache(async () => {
         with: {
           challenges: {
             with: {
-              challengeProgress: true,
+              // надо чтобы челледжпрогресс.юзерАйди был эквивалентен юзерАйди, который я ожидаю от auth()
+              challengeProgress: {
+                where: eq(challengeProgress.userId, userId),
+              },
             },
           },
         },
