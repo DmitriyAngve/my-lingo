@@ -7,6 +7,7 @@ import { StickWrapper } from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/user-progress";
 
 import { Header } from "./header";
+import { Unit } from "./unit";
 
 const LearnPage = async () => {
   const userProgressData = getUserProgress();
@@ -41,7 +42,7 @@ const LearnPage = async () => {
               description={unit.description}
               title={unit.title}
               lessons={unit.lessons}
-              activeLesson={null}
+              activeLesson={undefined}
               activeLessonPercentage={0}
             ></Unit>
           </div>
