@@ -124,11 +124,96 @@ export const getCourseProgress = cache(async () => {
   const firstuncompletedLesson = unitsInActivecourse
     .flatMap((unit) => unit.lessons)
     .find((lesson) => {
+      // TODO: If something doesn't work check the last if clause
       return lesson.challenges.some((challenge) => {
         return (
           !challenge.challengeProgress ||
-          challenge.challengeProgress.length === 0
+          challenge.challengeProgress.length === 0 ||
+          challenge.challengeProgress.some(
+            (progress) => progress.completed === false
+          )
         );
       });
     });
+
+  return {
+    activeLesson: firstuncompletedLesson,
+    activeLessonId: firstuncompletedLesson?.id,
+  };
+});
+
+export const getLesson = cache(async (id?: number) => {
+  const { userId } = await auth();
+
+  // no need to even try getCourseProgress()
+  if (!userId) {
+    return null;
+  }
+  // if user didn't pass an ID "(id?: number)", then we're going to load a lesson which is located as the first uncomplete lesson in this unit for that course
+  const courseProgress = await getCourseProgress();
+
+  // load the first uncompeleted lesson for the user
+  const lessonId = id || courseProgress?.activeLessonId;
+
+  // если ничего не найдено, то и показывать нечего
+
+  if (!lessonId) {
+    return null;
+  }
+
+  const data = await db.query.lessons.findFirst({
+    where: eq(lessons.id, lessonId),
+    with: {
+      challenges: {
+        orderBy: (challenges, { asc }) => [asc(challenges.order)],
+        with: {
+          challengeOptions: true,
+          challengeProgress: {
+            where: eq(challengeProgress.userId, userId),
+          },
+        },
+      },
+    },
+  });
+
+  if (!data || !data.challenges) {
+    return null;
+  }
+
+  const normalizedChallenges = data.challenges.map((challenge) => {
+    // TODO: If something doesn't work check the last if clause
+    const completed =
+      challenge.challengeProgress &&
+      challenge.challengeProgress.length > 0 &&
+      challenge.challengeProgress.every((progress) => progress.completed);
+
+    return { ...challenge, completed };
+  });
+
+  // replace challeges aaray with custom normalized challeges array
+  return { ...data, challenges: normalizedChallenges };
+});
+
+export const getLessonPercentage = cache(async () => {
+  const courseProgress = await getCourseProgress();
+
+  if (!courseProgress?.activeLessonId) {
+    return 0;
+  }
+
+  const lesson = await getLesson(courseProgress.activeLessonId);
+
+  if (!lesson) {
+    return 0;
+  }
+
+  const completedChallenges = lesson.challenges.filter(
+    (challenge) => challenge.completed
+  );
+
+  const percentage = Math.round(
+    (completedChallenges.length / lesson.challenges.length) * 100
+  );
+
+  return percentage;
 });
