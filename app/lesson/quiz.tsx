@@ -5,6 +5,7 @@ import { useState } from "react";
 import { challenges, challengeOptions } from "@/db/schema";
 
 import { Header } from "./header";
+import { QuestionBubble } from "./question-bubble";
 
 type Props = {
   initialPercentage: number;
@@ -35,6 +36,7 @@ export const Quiz = ({
     return uncompletedIndex === -1 ? 0 : uncompletedIndex;
   });
 
+  // Для контролирования какой челлендж в данный момент активен
   const challenge = challenges[activeIndex];
 
   const title =
@@ -55,7 +57,10 @@ export const Quiz = ({
             <h1 className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700 mt-[50%]">
               {title}
             </h1>
-            {/* <div>TODO: Challenge component</div> */}
+            {/* TODO: Change back to type ASSIST */}
+            {challenge.type === "SELECT" && (
+              <QuestionBubble question={challenge.question} />
+            )}
           </div>
         </div>
       </div>
