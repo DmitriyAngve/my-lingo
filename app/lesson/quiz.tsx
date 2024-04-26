@@ -57,10 +57,11 @@ export const Quiz = ({
             <h1 className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700 mt-[50%]">
               {title}
             </h1>
-            {/* TODO: Change back to type ASSIST */}
+            {/* <div className="flex flex-col items-center"> */}
             {challenge.type === "SELECT" && (
               <QuestionBubble question={challenge.question} />
             )}
+            {/* </div> */}
           </div>
         </div>
       </div>

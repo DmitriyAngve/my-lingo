@@ -12,6 +12,13 @@ export const QuestionBubble = ({ question }: Props) => {
         alt="Mascot"
         height={60}
         width={60}
+        className="hidden lg:block"
+      />
+      <Image
+        src="/mascot.svg"
+        alt="Mascot"
+        height={40}
+        width={40}
         className="block lg:hidden"
       />
       <div className="relative py-2 px-4 border-2 rounded-xl text-sm lg:text-base">
