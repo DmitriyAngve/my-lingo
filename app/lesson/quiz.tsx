@@ -6,6 +6,7 @@ import { challenges, challengeOptions } from "@/db/schema";
 
 import { Header } from "./header";
 import { QuestionBubble } from "./question-bubble";
+import { Challenge } from "./challenge";
 
 type Props = {
   initialPercentage: number;
@@ -38,6 +39,7 @@ export const Quiz = ({
 
   // Для контролирования какой челлендж в данный момент активен
   const challenge = challenges[activeIndex];
+  const options = challenge?.challengeOptions ?? [];
 
   const title =
     challenge.type === "ASSIST"
@@ -58,10 +60,18 @@ export const Quiz = ({
               {title}
             </h1>
             {/* <div className="flex flex-col items-center"> */}
-            {challenge.type === "SELECT" && (
+            {challenge.type === "ASSIST" && (
               <QuestionBubble question={challenge.question} />
             )}
             {/* </div> */}
+            <Challenge
+              options={options}
+              onSelect={() => {}}
+              status="wrong"
+              selectedOption={undefined}
+              disabled={false}
+              type={challenge.type}
+            />
           </div>
         </div>
       </div>
