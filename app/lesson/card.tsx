@@ -1,16 +1,17 @@
 import { challenges } from "@/db/schema";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 type Props = {
   id: number;
+  text: string;
   imageSrc: string | null;
   audioSrc: string | null;
-  text: string;
   shortcut: string;
   selected?: boolean;
   onClick: () => void;
-  disabled?: boolean;
   status?: "correct" | "wrong" | "none";
+  disabled?: boolean;
   type: (typeof challenges.$inferSelect)["type"];
 };
 
@@ -38,10 +39,16 @@ export const Card = ({
         selected &&
           status === "wrong" &&
           "border-rose-300 bg-rose-100 hover:bg-rose-100",
-        disabled && ""
+        disabled && "pointer-events-none hover:bg-white",
+        type === "ASSIST" && "w-full lg:p-3"
       )}
     >
-      Card
+      {imageSrc && (
+        <div className="relative mb-4 aspect-square max-h-[80px] w-full lg:max-h-[150px]">
+          {text}
+          <Image src={imageSrc} fill alt={text} />
+        </div>
+      )}
     </div>
   );
 };
