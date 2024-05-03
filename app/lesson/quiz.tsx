@@ -5,7 +5,10 @@ import { useState } from "react";
 import { challenges, challengeOptions } from "@/db/schema";
 
 import { Header } from "./header";
+import { Footer } from "./footer";
+
 import { QuestionBubble } from "./question-bubble";
+
 import { Challenge } from "./challenge";
 
 type Props = {
@@ -46,6 +49,8 @@ export const Quiz = ({
 
   const onSelect = (id: number) => {
     if (status !== "none") return;
+
+    setSelectedOption(id);
   };
 
   const title =
@@ -63,25 +68,28 @@ export const Quiz = ({
       <div className="flex-1">
         <div className="h-full flex items-center justify-center">
           <div className="lg:min-h-[350px] lg:w-[600px] w-full px-6 lg:px-0 flex flex-col gap-y-12 ">
-            <h1 className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700 mt-[50%]">
+            <h1 className="text-lg lg:text-3xl text-center lg:text-start font-bold text-neutral-700 mt-[30%]">
               {title}
             </h1>
-            {/* <div className="flex flex-col items-center"> */}
-            {challenge.type === "ASSIST" && (
-              <QuestionBubble question={challenge.question} />
-            )}
-            {/* </div> */}
-            <Challenge
-              options={options}
-              onSelect={() => {}}
-              status="none"
-              selectedOption={undefined}
-              disabled={false}
-              type={challenge.type}
-            />
+            <div>
+              {challenge.type === "ASSIST" && (
+                <QuestionBubble question={challenge.question} />
+              )}
+
+              <Challenge
+                options={options}
+                onSelect={onSelect}
+                status={status}
+                selectedOption={selectedOption}
+                disabled={false}
+                type={challenge.type}
+              />
+            </div>
           </div>
         </div>
       </div>
+
+      <Footer disabled={!selectedOption} status={status} onCheck={() => {}} />
     </>
   );
 };
