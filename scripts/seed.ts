@@ -131,7 +131,7 @@ const main = async () => {
         imageSrc: "/robot.svg",
         correct: false,
         text: "el robot",
-        audioSrc: "/robot.mp3",
+        audioSrc: "/es_robot.mp3",
       },
     ]);
 

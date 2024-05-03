@@ -1,6 +1,12 @@
-import { challenges } from "@/db/schema";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
+
+import { useCallback } from "react";
+
+import { cn } from "@/lib/utils";
+
+import { useAudio, useKey } from "react-use";
+
+import { challenges } from "@/db/schema";
 
 type Props = {
   id: number;
@@ -27,9 +33,26 @@ export const Card = ({
   status,
   type,
 }: Props) => {
+  // audio, _, controls - без нижнего подчеркивания не работает, судя по их документации
+  // || "" - если аудио не существует (иначе он ругается)
+  const [audio, _, controls] = useAudio({ src: audioSrc || "" });
+
+  const handleClick = useCallback(() => {
+    if (disabled) return;
+
+    controls.play();
+    onClick();
+  }, [disabled, onClick, controls]);
+
+  // shortcut - из challenge (`${i + 1}`) номер текущего индекса + 1
+  // Если пользователь кликнет на номер один - то проиграется нужный аудиофайл
+  // {} - пустая опция
+  // [handleClick] - массив зависимостей
+  useKey(shortcut, handleClick, {}, [handleClick]);
+
   return (
     <div
-      onClick={() => {}}
+      onClick={handleClick}
       className={cn(
         "h-full cursor-pointer rounded-xl border-2 border-b-4 p-4 hover:bg-black/5 active:border-b-2 lg:p-6",
         selected && "border-sky-300 bg-sky-100 hover:bg-sky-100",
@@ -43,6 +66,7 @@ export const Card = ({
         type === "ASSIST" && "w-full lg:p-3"
       )}
     >
+      {audio}
       {imageSrc && (
         <div className="relative mb-4 aspect-square max-h-[80px] w-full lg:max-h-[150px]">
           {/* {text} */}
