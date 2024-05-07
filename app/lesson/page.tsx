@@ -22,7 +22,7 @@ const LessonPage = async () => {
     100;
 
   return (
-    <div>
+    <div className="h-4/6">
       <Quiz
         initialLessonId={lesson.id}
         initialLessonChallenges={lesson.challenges}
