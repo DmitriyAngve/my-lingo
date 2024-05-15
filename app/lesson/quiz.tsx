@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 
 import { useState, useTransition } from "react";
 
@@ -84,18 +85,27 @@ export const Quiz = ({
 
     if (correctOption.id === selectedOption) {
       startTransition(() => {
-        upsertChallengeProgress(challenge.id).then((response) => {
-          if (response?.error === "hearts") {
-            console.log("Missing hearts");
-            return;
-          }
-        });
+        upsertChallengeProgress(challenge.id)
+          .then((response) => {
+            if (response?.error === "hearts") {
+              console.log("Missing hearts");
+              return;
+            }
+
+            setStatus("correct");
+            setPercentage((prev) => prev + 100 / challenges.length);
+
+            // This is a practice
+            if (initialPercentage === 100) {
+              setHearts((prev) => Math.min(prev + 1, 5));
+            }
+          })
+          .catch(() => toast.error("Something went wrong. Please try again."));
       });
     } else {
       console.error("Incorrect option!");
     }
   };
-
   const title =
     challenge.type === "ASSIST"
       ? "Select the correct meaning"
@@ -118,7 +128,6 @@ export const Quiz = ({
               {challenge.type === "ASSIST" && (
                 <QuestionBubble question={challenge.question} />
               )}
-
               <Challenge
                 options={options}
                 onSelect={onSelect}
@@ -131,7 +140,6 @@ export const Quiz = ({
           </div>
         </div>
       </div>
-
       <Footer disabled={!selectedOption} status={status} onCheck={onContinue} />
     </>
   );
