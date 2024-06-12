@@ -1,8 +1,8 @@
 "use client";
 import { toast } from "sonner";
-
 import { useState, useTransition } from "react";
 
+import { reduceHearts } from "@/actions/user-progress";
 import { challenges, challengeOptions } from "@/db/schema";
 import { upsertChallengeProgress } from "@/actions/challenge_progress";
 
@@ -103,7 +103,22 @@ export const Quiz = ({
           .catch(() => toast.error("Something went wrong. Please try again."));
       });
     } else {
-      console.error("Incorrect option!");
+      startTransition(() => {
+        reduceHearts(challenge.id)
+          .then((response) => {
+            if (response?.error === "hearts") {
+              console.error("Missing hearts");
+              return;
+            }
+
+            setStatus("wrong");
+
+            if (!response?.error) {
+              setHearts((prev) => Math.max(prev - 1, 0));
+            }
+          })
+          .catch(() => toast.error("Something went wrong. Please try again."));
+      });
     }
   };
   const title =
@@ -134,7 +149,7 @@ export const Quiz = ({
                 onSelect={onSelect}
                 status={status}
                 selectedOption={selectedOption}
-                disabled={false}
+                disabled={pending || !selectedOption}
                 type={challenge.type}
               />
             </div>
